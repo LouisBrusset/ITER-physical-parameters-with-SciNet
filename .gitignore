@@ -1,0 +1,41 @@
+# Python cache
+__pycache__/
+.cache/
+*.py[cod]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual env
+.venv/
+venv/
+.env/
+env/
+
+# IDEs
+.vscode/
+*.swp
+
+# Jupyter
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# Logs
+*.log
+
+# User generated files
+#
+
+# Test generated directories
+htmlcov/
+.coverage
+
+
+# Large datasets
+## NetCDF files (all .nc files)
+data/**/*.nc
+data/**/*.npy
+data/**/*.pt
+data/**/*.csv
+## But keep this specific file
