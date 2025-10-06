@@ -30,23 +30,27 @@ class EarlyStopping:
         """
         Check if training should be stopped based on the current loss.
 
-        Parameters:
-        current_loss: The loss value for the current epoch.
-        model: The model whose state_dict will be saved if it is the best so far.
+        Args:
+            current_loss: The loss value for the current epoch.
+            model: The model whose state_dict will be saved if it is the best so far.
+        
+        Returns:
+            bool: True if training should be stopped, False otherwise.
         """
         if self.best_loss is None:
             self.best_loss = current_loss
             self.best_state_dict = model.state_dict()  # <- Save initial weights
+            self.counter = 0
             return False
 
-        relative_change = abs((self.best_loss - current_loss) / (self.best_loss + 1e-8))
-
-        if relative_change < self.min_delta:
-            self.counter += 1
-        else:
+        if current_loss < (self.best_loss - self.min_delta):
+            # Loss has improved significantly: reset counter and update best loss
             self.best_loss = current_loss
             self.counter = 0
-            self.best_state_dict = model.state_dict()  # <- Save new best weights
+            self.best_state_dict = model.state_dict()
+        else:
+            # No improvement: increment the counter
+            self.counter += 1
 
         return self.counter >= self.patience
 

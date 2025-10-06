@@ -5,7 +5,7 @@ import torch.nn as nn
 
 class SciNetEncoder(nn.Module):
     def __init__(self, 
-                 input_size: int = 50, 
+                 input_size: int = 1000, 
                  latent_size: int = 3, 
                  hidden_sizes: list[int] = [128, 64]
                  ) -> None:
@@ -32,9 +32,9 @@ class SciNetEncoder(nn.Module):
 class QuestionDecoder(nn.Module):
     def __init__(self, 
                  latent_size: int = 3, 
-                 question_size: int = 1, 
-                 output_size: int = 1, 
-                 hidden_sizes: list = [64, 32]
+                 question_size: int = 1000, 
+                 output_size: int = 1000, 
+                 hidden_sizes: list = [128, 128]
                  ) -> None:
         super().__init__()
         self.input_sizes = [latent_size + question_size] + hidden_sizes
@@ -55,12 +55,12 @@ class QuestionDecoder(nn.Module):
 
 class PendulumNet(nn.Module):
     def __init__(self, 
-                 input_size: int = 50, 
-                 enc_hidden_sizes: list[int] = [500, 100], 
-                 latent_size: int = 10, 
-                 question_size: int = 1,
-                 dec_hidden_sizes: list[int] = [100, 100], 
-                 output_size: int = 1
+                 input_size: int = 1000, 
+                 enc_hidden_sizes: list[int] = [128, 64], 
+                 latent_size: int = 3, 
+                 question_size: int = 1000,
+                 dec_hidden_sizes: list[int] = [128, 128], 
+                 output_size: int = 1000
                  ) -> None:
         super().__init__()
         self.encoder = SciNetEncoder(input_size=input_size, latent_size=latent_size, hidden_sizes=enc_hidden_sizes)
