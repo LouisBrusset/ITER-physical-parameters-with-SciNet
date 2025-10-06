@@ -37,7 +37,7 @@ def train_scinet(
         model.train()
         train_loss = 0.0
         kld_loss, recon_loss = 0.0, 0.0
-        for observations, questions, a_corr, _ in tqdm(train_loader, desc="Training", leave=False):
+        for observations, questions, a_corr in tqdm(train_loader, desc="Training", leave=False):
             observations = observations.to(device)
             questions = questions.to(device)
             a_corr = a_corr.to(device)
@@ -62,7 +62,7 @@ def train_scinet(
         model.eval()
         valid_loss = 0.0
         with torch.no_grad():
-            for observations, questions, a_corr, _ in tqdm(valid_loader, desc="Validation", leave=False):
+            for observations, questions, a_corr in tqdm(valid_loader, desc="Validation", leave=False):
                 observations = observations.to(device)
                 questions = questions.to(device)
                 a_corr = a_corr.to(device)

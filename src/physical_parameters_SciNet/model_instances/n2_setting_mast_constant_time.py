@@ -28,11 +28,12 @@ class Config:
 
     ### Data parameters
     # Real tokamak data: FAIR-MAST API
-    N_SAMPLES = 6118
+    N_SAMPLES = 6102
     GROUPS = ["magnetics"]
     MIN_TIME = -0.05
     MAX_TIME = 0.45
     TIMESTEPS = 1000
+    SUBSAMPLING_FACTOR = 5   # To reduce the input size (e.g. from 1000 to 200)
 
 
     ### DataLoader parameters
@@ -43,37 +44,36 @@ class Config:
 
 
     ### SCINET architecture
-    M_INPUT_SIZE = TIMESTEPS
-    M_ENC_HIDDEN_SIZES = [100, 100] # [500, 100, 100]
-    M_LATENT_SIZE = 3
-    M_QUESTION_SIZE = TIMESTEPS
-    M_DEC_HIDDEN_SIZES = [100, 100] # [200, 200, 300]
-    M_OUTPUT_SIZE = TIMESTEPS
+    M_INPUT_SIZE = 200
+    M_ENC_HIDDEN_SIZES = [50, 50]   # [500, 100, 100]
+    M_LATENT_SIZE = 10
+    M_QUESTION_SIZE = 200
+    M_DEC_HIDDEN_SIZES = [50, 100, 50]   # [200, 200, 300]
+    M_OUTPUT_SIZE = 200
 
     ### Hyperparameters
     BATCH_SIZE_TRAIN = 50
     BATCH_SIZE_EVAL = 50
     FIRST_LEARNING_RATE = 5e-4
-    WEIGHT_DECAY = 1e-6     # if needed
+    WEIGHT_DECAY = 1e-6
     KLD_BETA = 0.001
 
     ### Train parameters
     NUM_EPOCHS = 150
     ES_PATIENCE = 12
-    ES_MIN_DELTA = 5e-4
-    GC_MAX_NORM = 1.0
-    LRS_FACTOR = 0.66
+    ES_MIN_DELTA = 1e-5
+    GC_MAX_NORM = 1.5
+    LRS_FACTOR = 0.75
     LRS_PATIENCE = 6
     LRS_MIN_LR = 1e-7
     LRS_MIN_DELTA = 1e-4
 
 
 
-
     ### Data scrapping from MAST API
 
     ### Others
-    BEST_MODEL_NAME = "pendulum_scinet_final"
+    BEST_MODEL_NAME = "mast_scinet_final"
 
    
 
