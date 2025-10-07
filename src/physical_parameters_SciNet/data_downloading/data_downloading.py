@@ -6,7 +6,6 @@ import tqdm
 
 # Standard library imports
 import time
-import pathlib
 import json
 from concurrent.futures import as_completed, ThreadPoolExecutor
 from functools import partial

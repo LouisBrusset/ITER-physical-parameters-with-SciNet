@@ -1,4 +1,5 @@
 from pathlib import Path
+import torch
 # import yaml
 
 from physical_parameters_SciNet.ml_tools.random_seed import seed_everything
@@ -21,7 +22,8 @@ class Config:
     DIR_FIGURES = DIR_RESULTS / f"figures"
 
     ### PyTorch device & set seed for reproducibility
-    DEVICE = select_torch_device(temporal_dim="parallel")
+    # DEVICE = select_torch_device(temporal_dim="parallel")  # GPU 0 is saturated
+    DEVICE = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")  # Use GPU 1 instead
     SEED = 42
     seed_everything(SEED)
 
@@ -45,15 +47,15 @@ class Config:
 
     ### SCINET architecture
     M_INPUT_SIZE = 200
-    M_ENC_HIDDEN_SIZES = [50, 50]   # [500, 100, 100]
+    M_ENC_HIDDEN_SIZES = [500, 100]   # [500, 100, 100]
     M_LATENT_SIZE = 10
     M_QUESTION_SIZE = 200
-    M_DEC_HIDDEN_SIZES = [50, 100, 50]   # [200, 200, 300]
+    M_DEC_HIDDEN_SIZES = [100, 100]   # [200, 200, 300]
     M_OUTPUT_SIZE = 200
 
     ### Hyperparameters
-    BATCH_SIZE_TRAIN = 50
-    BATCH_SIZE_EVAL = 50
+    BATCH_SIZE_TRAIN = 512
+    BATCH_SIZE_EVAL = 512
     FIRST_LEARNING_RATE = 5e-4
     WEIGHT_DECAY = 1e-6
     KLD_BETA = 0.001
@@ -73,7 +75,8 @@ class Config:
     ### Data scrapping from MAST API
 
     ### Others
-    BEST_MODEL_NAME = "mast_scinet_final"
+    MODEL_NAME = "mast_scinet"
+    BEST_MODEL_NAME = f"{MODEL_NAME}_final"
 
    
 

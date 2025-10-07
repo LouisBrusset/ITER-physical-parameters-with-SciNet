@@ -1,4 +1,5 @@
 import torch
+import gc
 
 from physical_parameters_SciNet.model_instances.n2_setting_mast_constant_time import config
 from physical_parameters_SciNet.utils.build_dataset import mast_dataset
@@ -12,19 +13,32 @@ from physical_parameters_SciNet.utils.train_scinet import train_scinet, plot_his
 
 if __name__ == "__main__":
 
+    # Clear GPU cache before starting
+    torch.cuda.empty_cache()
+    gc.collect()
+
     device = config.DEVICE
-    print(f"----------- Using device: {device} -----------")
+    print(f"\n----------- Using device: {device} -----------")
 
     # Load datasets
     path_train = config.DIR_PREPROCESSED_DATA / "mast_scinet_train_dataset.pt"
     path_valid = config.DIR_PREPROCESSED_DATA / "mast_scinet_valid_dataset.pt"
     dataset_train = torch.load(path_train, weights_only=False)
+    print(f"\nTraining dataset loaded with {len(dataset_train)} samples.")
     dataset_valid = torch.load(path_valid, weights_only=False)
+    print(f"Validation dataset loaded with {len(dataset_valid)} samples.\n")
+
+    # Load normalization stats
+    path_stats = config.DIR_OTHERS_DATA / f"{config.MODEL_NAME}_datatrain_stats.pt"
+    normalization_stats = torch.load(path_stats)
+    print(f"Normalization stats loaded from {path_stats}.\n")
+    print(f"Normalization stats: {normalization_stats}\n")
 
     # Create DataLoader
     train_loader = DataLoader(dataset_train, batch_size=config.BATCH_SIZE_TRAIN, shuffle=True)
+    print(f"Training DataLoader created with batch size {config.BATCH_SIZE_TRAIN}.")
     valid_loader = DataLoader(dataset_valid, batch_size=config.BATCH_SIZE_EVAL, shuffle=True)
-    print(f"\nDataLoaders created with batch size {config.BATCH_SIZE_TRAIN} for training and {config.BATCH_SIZE_EVAL} for evaluation.\n")
+    print(f"Validation DataLoader created with batch size {config.BATCH_SIZE_EVAL}.\n")
 
     # Initialize model, optimizer, and callbacks
     mast_net = PendulumNet(
@@ -35,6 +49,9 @@ if __name__ == "__main__":
         dec_hidden_sizes=config.M_DEC_HIDDEN_SIZES,
         output_size=config.M_OUTPUT_SIZE
     )
+    print(f"Model initialized with {sum(p.numel() for p in mast_net.parameters() if p.requires_grad)} trainable parameters.\n")
+    print(mast_net, "\n")
+
     optimizer = torch.optim.Adam(mast_net.parameters(), lr=config.FIRST_LEARNING_RATE, weight_decay=config.WEIGHT_DECAY)
     early_stopper = EarlyStopping(patience=config.ES_PATIENCE, min_delta=config.ES_MIN_DELTA)
     gradient_clipper = GradientClipping(max_norm=config.GC_MAX_NORM)
@@ -47,7 +64,8 @@ if __name__ == "__main__":
             train_loader, 
             valid_loader, 
             mast_net, 
-            optimizer, 
+            optimizer,
+            normalization_stats,
             num_epochs=config.NUM_EPOCHS, 
             kld_beta=config.KLD_BETA, 
             early_stopper=early_stopper, 
@@ -58,12 +76,12 @@ if __name__ == "__main__":
 
         print("\nTraining completed.")
 
-        path = config.DIR_MODEL_PARAMS / "mast_scinet_final.pth"
+        path = config.DIR_MODEL_PARAMS / f"{config.MODEL_NAME}_final.pth"
         torch.save(mast_net.state_dict(), path)
 
     except KeyboardInterrupt:
         print("\nTraining interrupted. Saving current model state...")
-        path = config.DIR_PARAMS_CHECKPOINTS / "mast_scinet_interrupted.pth"
+        path = config.DIR_PARAMS_CHECKPOINTS / f"{config.MODEL_NAME}_interrupted.pth"
         torch.save(mast_net.state_dict(), path)
         print("Model state saved.")
 

@@ -31,7 +31,7 @@ class Config:
     MAXTIME = 100.0
     TIMESTEPS = 200
 
-    BETA_RANGE = (0.5, 5.0)
+    BETA_RANGE = (0.5, 3.0)
     KAPA_RANGE = (0.5, 20.0)
     THETA0 = 1.0
     OMEGA0 = 0.0
@@ -46,28 +46,28 @@ class Config:
 
     ### SCINET architecture
     M_INPUT_SIZE = TIMESTEPS
-    M_ENC_HIDDEN_SIZES = [100, 100] # [500, 100, 100]
+    M_ENC_HIDDEN_SIZES =  [500, 100, 100]
     M_LATENT_SIZE = 3
     M_QUESTION_SIZE = TIMESTEPS
-    M_DEC_HIDDEN_SIZES = [100, 100] # [200, 200, 300]
+    M_DEC_HIDDEN_SIZES =  [200, 500, 300]
     M_OUTPUT_SIZE = TIMESTEPS
 
     ### Hyperparameters
     BATCH_SIZE_TRAIN = 50
     BATCH_SIZE_EVAL = 50
-    FIRST_LEARNING_RATE = 5e-4
+    FIRST_LEARNING_RATE = 5e-5
     WEIGHT_DECAY = 1e-6     # if needed
     KLD_BETA = 0.001
 
     ### Train parameters
     NUM_EPOCHS = 150
     ES_PATIENCE = 12
-    ES_MIN_DELTA = 5e-4
+    ES_MIN_DELTA = 5e-5
     GC_MAX_NORM = 1.0
     LRS_FACTOR = 0.66
     LRS_PATIENCE = 6
     LRS_MIN_LR = 1e-7
-    LRS_MIN_DELTA = 1e-4
+    LRS_MIN_DELTA = 1e-5
 
     ### Others
     BEST_MODEL_NAME = "pendulum_scinet_final"

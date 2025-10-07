@@ -4,7 +4,6 @@ from torch.utils.data import DataLoader
 
 import gc
 from tqdm import tqdm
-from pathlib import Path
 
 from physical_parameters_SciNet.model_instances.n2_setting_mast_constant_time import config
 from physical_parameters_SciNet.ml_tools.metrics import scinet_loss_forced_pendulum as scinet_loss
@@ -18,6 +17,7 @@ def train_scinet(
         valid_loader: DataLoader,
         model: torch.nn.Module, 
         optimizer: torch.optim.Optimizer, 
+        normalization_stats: dict,
         num_epochs: int = 150, 
         kld_beta: float = 0.001, 
         early_stopper: EarlyStopping = None, 
@@ -28,19 +28,22 @@ def train_scinet(
     
     torch.cuda.empty_cache()
     model.to(device)
+    obs_factor = normalization_stats['obs_mean_max']
+    que_factor = normalization_stats['que_mean_max']
+    ans_factor = normalization_stats['ans_mean_max']
+
     print("------training on {}-------\n".format(device))
     history = {'train_loss': [], 'valid_loss': []}
     print(f"{'Epoch':<20} ||| {'Train Loss':<15} ||| {'KLD Loss':<12} {'Recon Loss':<12} ||||||| {'Valid Loss':<15}")
-
     # Training
     for epoch in range(num_epochs):
         model.train()
         train_loss = 0.0
         kld_loss, recon_loss = 0.0, 0.0
         for observations, questions, a_corr in tqdm(train_loader, desc="Training", leave=False):
-            observations = observations.to(device)
-            questions = questions.to(device)
-            a_corr = a_corr.to(device)
+            observations = observations.to(device) / obs_factor
+            questions = questions.to(device) / que_factor
+            a_corr = a_corr.to(device) / ans_factor
 
             optimizer.zero_grad()
             possible_answer, mean, logvar = model(observations, questions)
@@ -63,9 +66,9 @@ def train_scinet(
         valid_loss = 0.0
         with torch.no_grad():
             for observations, questions, a_corr in tqdm(valid_loader, desc="Validation", leave=False):
-                observations = observations.to(device)
-                questions = questions.to(device)
-                a_corr = a_corr.to(device)
+                observations = observations.to(device) / obs_factor
+                questions = questions.to(device) / que_factor
+                a_corr = a_corr.to(device) / ans_factor
 
                 possible_answer, mean, logvar = model(observations, questions)
                 loss = scinet_loss(possible_answer, a_corr, mean, logvar, beta=kld_beta)[0]
@@ -86,7 +89,7 @@ def train_scinet(
         if lr_scheduler is not None:
             lr_scheduler.step(valid_loss)
 
-        path = config.DIR_PARAMS_CHECKPOINTS / "pendulum_scinet_checkpointed.pth"
+        path = config.DIR_PARAMS_CHECKPOINTS / f"{config.MODEL_NAME}_checkpointed.pth"
         torch.save(model.state_dict(), path)
 
         del observations, questions, a_corr, possible_answer, mean, logvar, loss, l_kld, l_recon
@@ -105,6 +108,6 @@ def plot_history(history_train: list, history_valid: list) -> None:
     plt.ylabel('Loss')
     plt.legend()
     plt.grid(True, alpha=0.3)
-    path = config.DIR_FIGURES / "training_validation_loss.png"
+    path = config.DIR_FIGURES / f"train_valid_loss_{config.MODEL_NAME}.png"
     plt.savefig(path)
     return None
