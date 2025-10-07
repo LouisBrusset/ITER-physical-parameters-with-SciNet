@@ -21,7 +21,7 @@ class Config:
     # Real tokamak data: FAIR-MAST API
     N_SAMPLES = 6102
     GROUPS = ["magnetics"]
-    CHOSEN_SIGNAL = "ip"   # "ip" or "all"
+    CHOSEN_SIGNAL = "b_field_pol_probe_ccbv_field::AMB_CCBV01"   # "ip" or "all"
     MIN_TIME = -0.05
     MAX_TIME = 0.45
     TIMESTEPS = 1000

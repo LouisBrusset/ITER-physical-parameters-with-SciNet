@@ -1,19 +1,27 @@
 import torch
+import numpy as np
+
 import gc
 
-from physical_parameters_SciNet.model_instances.n2_setting_mast_constant_time import config
+from physical_parameters_SciNet.model_instances.n3_setting_mast_mag_prob import config
+
+from physical_parameters_SciNet.utils.build_dataset import build_dataset
+
 from physical_parameters_SciNet.utils.build_dataset import mast_dataset
 from torch.utils.data import DataLoader
 from physical_parameters_SciNet.model.scinet import PendulumNet
 from physical_parameters_SciNet.ml_tools.train_callbacks import EarlyStopping, GradientClipping, LRScheduling
 from physical_parameters_SciNet.utils.train_scinet import train_scinet, plot_history
 
+from physical_parameters_SciNet.utils.mast_scinet_evaluation import load_trained_model, full_inference, plot_reconstructions_answers_observations, plot_latent_variables
 
 
 
 if __name__ == "__main__":
 
-    # Clear GPU cache before starting
+    build_dataset()
+
+    # Clear GPU cache before starting training
     torch.cuda.empty_cache()
     gc.collect()
 
@@ -88,3 +96,32 @@ if __name__ == "__main__":
 
     plot_history(history['train_loss'], history['valid_loss'])
     
+
+
+    # Load model
+    model_path = config.DIR_PARAMS_CHANNEL / f"{config.BEST_MODEL_NAME}.pth"
+    pendulum_net = load_trained_model(model_path, device)
+
+    # Load test dataset
+    path = config.DIR_PREPROCESSED_DATA / f"{config.MODEL_NAME}_test_dataset.pt"
+    test_dataset = torch.load(path, weights_only=False)
+    test_loader = DataLoader(test_dataset, batch_size=config.BATCH_SIZE_EVAL, shuffle=True)
+
+    # Load normalization stats
+    path = config.DIR_OTHERS_DATA_CHANNEL / f"{config.MODEL_NAME}_normalization_stats.pt"
+    normalization_stats = torch.load(path)
+
+    # Full inference on test set
+    reconstructions, means, logvars, all_observations, all_questions, all_answers = full_inference(pendulum_net, test_loader, normalization_stats, device)
+
+    # Plot latent variables distributions
+    plot_latent_variables(means, n_max_cols=5)
+
+    # Plot a random reconstruction
+    sample_idx = np.random.choice(config.TEST_SIZE)
+    plot_reconstructions_answers_observations(
+        observations=all_observations, 
+        reconstructions=reconstructions, 
+        questions=all_questions, 
+        sample_idx=sample_idx
+    )

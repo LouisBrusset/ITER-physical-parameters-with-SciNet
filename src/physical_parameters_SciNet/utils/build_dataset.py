@@ -52,7 +52,7 @@ class mast_dataset(Dataset):
             "que_mean_max": self.que_mean_max,
             "ans_mean_max": self.ans_mean_max
         }
-        path = config.DIR_OTHERS_DATA / f"{config.MODEL_NAME}_datatrain_stats.pt"
+        path = config.DIR_OTHERS_DATA / f"{config.MODEL_NAME}_normalization_stats.pt"
         torch.save(normalization_stats, path)
         print(f"\nNormalization stats saved to {path}.\n")
         return None
@@ -82,7 +82,7 @@ def compute_normalization_stats_from_subset(subset_dataset: Dataset) -> None:
         "que_mean_max": que_mean_max,
         "ans_mean_max": ans_mean_max
     }
-    path = config.DIR_OTHERS_DATA / f"{config.MODEL_NAME}_datatrain_stats.pt"
+    path = config.DIR_OTHERS_DATA_CHANNEL / f"{config.MODEL_NAME}_normalization_stats.pt"
     torch.save(normalization_stats, path)
     print(f"\nNormalization stats saved to {path}.\n")
     return None
@@ -100,7 +100,7 @@ def build_dataset() -> None:
     # Create custom Dataset
     dataset_custom = mast_dataset(
         dataset,
-        chosen_signals="ip"
+        chosen_signals=config.CHOSEN_SIGNAL
     )
     train_dataset, val_dataset, test_dataset = random_split(dataset_custom, [config.TRAIN_SIZE, config.VALID_SIZE, config.TEST_SIZE])
     print(f"\nDataset split into train ({len(train_dataset)} samples), valid ({len(val_dataset)} samples), and test ({len(test_dataset)} samples).")
@@ -109,15 +109,15 @@ def build_dataset() -> None:
     compute_normalization_stats_from_subset(train_dataset)
     
     # Save Dataset
-    # path_train = config.DIR_PREPROCESSED_DATA / "mast_scinet_train_dataset.pt"
-    # path_valid = config.DIR_PREPROCESSED_DATA / "mast_scinet_valid_dataset.pt"
-    # path_test = config.DIR_PREPROCESSED_DATA / "mast_scinet_test_dataset.pt"
-    # torch.save(train_dataset, path_train)
-    # print(f"\nDataset saved to {path_train}.")
-    # torch.save(val_dataset, path_valid)
-    # print(f"\nDataset saved to {path_valid}.")
-    # torch.save(test_dataset, path_test)
-    # print(f"\nDataset saved to {path_test}.")
+    path_train = config.DIR_PREPROCESSED_DATA / f"{config.MODEL_NAME}_train_dataset.pt"
+    path_valid = config.DIR_PREPROCESSED_DATA / f"{config.MODEL_NAME}_valid_dataset.pt"
+    path_test = config.DIR_PREPROCESSED_DATA / f"{config.MODEL_NAME}_test_dataset.pt"
+    torch.save(train_dataset, path_train)
+    print(f"\nDataset saved to {path_train}.")
+    torch.save(val_dataset, path_valid)
+    print(f"\nDataset saved to {path_valid}.")
+    torch.save(test_dataset, path_test)
+    print(f"\nDataset saved to {path_test}.")
 
     return None
 

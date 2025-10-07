@@ -108,6 +108,6 @@ def plot_history(history_train: list, history_valid: list) -> None:
     plt.ylabel('Loss')
     plt.legend()
     plt.grid(True, alpha=0.3)
-    path = config.DIR_FIGURES / f"train_valid_loss_{config.MODEL_NAME}.png"
+    path = config.DIR_FIGURES_CHANNEL / f"train_valid_loss_{config.MODEL_NAME}.png"
     plt.savefig(path)
     return None
