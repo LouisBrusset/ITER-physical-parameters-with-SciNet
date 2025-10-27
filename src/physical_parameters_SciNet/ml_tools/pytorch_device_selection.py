@@ -14,7 +14,7 @@ def print_torch_info():
         print("\nNo NVIDIA GPU is available for PyTorch.")
 
 
-def select_torch_device(temporal_dim: str = "sequential") -> torch.device:
+def select_torch_device(temporal_dim: str = "sequential", device_id: int | None = None) -> torch.device:
     """
     Select the appropriate PyTorch device based on the availability of CUDA and the specified temporal dimension.
 
@@ -31,8 +31,12 @@ def select_torch_device(temporal_dim: str = "sequential") -> torch.device:
     if torch.cuda.is_available():
         if torch.cuda.device_count() > 1:
             if temporal_dim == "sequential":
-                torch.cuda.set_device(0)
-                device = torch.device("cuda:0")
+                if device_id is not None:
+                    torch.cuda.set_device(device_id)
+                    device = torch.device(f"cuda:{device_id}")
+                else:
+                    torch.cuda.set_device(0)
+                    device = torch.device("cuda:0")
             elif temporal_dim == "parallel":
                 device = torch.device("cuda")
             else:
