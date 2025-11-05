@@ -3,7 +3,8 @@ import torch.nn as nn
 from torch.utils.data import Dataset, random_split
 import xarray as xr
 
-from physical_parameters_SciNet.model_instances.n2_setting_mast_constant_time import config
+# from physical_parameters_SciNet.model_instances.n2_setting_mast_constant_time import config
+from physical_parameters_SciNet.model_instances.n3_setting_mast_mag_prob import config
 
 
 class mast_dataset(Dataset):
@@ -28,7 +29,10 @@ class mast_dataset(Dataset):
         answers = self.dataset["ip_ref"].sel(shot_id=shot_id).values        # shape: (time,)
         questions = self.dataset["i_plasma"].sel(shot_id=shot_id).values    # shape: (time,)
         if self.chosen_channel is not None:     # Multi-channel variable
-            observations = self.dataset[self.chosen_var].sel(shot_id=shot_id, **{f"{self.chosen_var}_channel": self.chosen_channel}).values
+            if "b_field" in self.chosen_var:
+                observations = self.dataset[self.chosen_var].sel(shot_id=shot_id, **{f"{self.chosen_var[:-6]}_channel": self.chosen_channel}).values
+            elif "flux" in self.chosen_var:
+                observations = self.dataset[self.chosen_var].sel(shot_id=shot_id, **{f"{self.chosen_var[:-5]}_channel": self.chosen_channel}).values
         else:                                   # Single-channel variable
             observations = self.dataset[self.chosen_var].sel(shot_id=shot_id).values
         
@@ -52,7 +56,7 @@ class mast_dataset(Dataset):
             "que_mean_max": self.que_mean_max,
             "ans_mean_max": self.ans_mean_max
         }
-        path = config.DIR_OTHERS_DATA / f"{config.MODEL_NAME}_normalization_stats.pt"
+        path = config.DIR_OTHERS_DATA_CHANNEL / f"{config.MODEL_NAME}_normalization_stats.pt"
         torch.save(normalization_stats, path)
         print(f"\nNormalization stats saved to {path}.\n")
         return None

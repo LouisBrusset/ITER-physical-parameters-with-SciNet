@@ -5,7 +5,9 @@ from torch.utils.data import DataLoader
 import gc
 from tqdm import tqdm
 
-from physical_parameters_SciNet.model_instances.n2_setting_mast_constant_time import config
+# from physical_parameters_SciNet.model_instances.n2_setting_mast_constant_time import config
+from physical_parameters_SciNet.model_instances.n3_setting_mast_mag_prob import config
+
 from physical_parameters_SciNet.ml_tools.metrics import scinet_loss_forced_pendulum as scinet_loss
 from physical_parameters_SciNet.ml_tools.train_callbacks import EarlyStopping, GradientClipping, LRScheduling
 

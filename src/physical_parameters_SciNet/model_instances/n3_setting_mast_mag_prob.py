@@ -21,7 +21,7 @@ class Config:
     # Real tokamak data: FAIR-MAST API
     N_SAMPLES = 6102
     GROUPS = ["magnetics"]
-    CHOSEN_SIGNAL = "b_field_pol_probe_ccbv_field::AMB_CCBV01"   # "ip" or "all"
+    CHOSEN_SIGNAL = "b_field_pol_probe_ccbv_field::AMB_CCBV03"   # "ip" or "all"
     MIN_TIME = -0.05
     MAX_TIME = 0.45
     TIMESTEPS = 1000
@@ -76,6 +76,7 @@ class Config:
     DIR_PARAMS_CHANNEL = DIR_MODEL_PARAMS / f"{CHOSEN_SIGNAL}_channel"
     DIR_PARAMS_CHECKPOINTS = DIR_PARAMS_CHANNEL / f"checkpoints"
     DIR_PARAMS_CHANNEL.mkdir(parents=True, exist_ok=True)
+    DIR_PARAMS_CHECKPOINTS.mkdir(parents=True, exist_ok=True)
 
     DIR_FIGURES = DIR_RESULTS / f"figures"
     DIR_FIGURES_CHANNEL = DIR_FIGURES / f"{CHOSEN_SIGNAL}_channel"

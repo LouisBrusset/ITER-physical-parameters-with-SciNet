@@ -11,7 +11,8 @@ from concurrent.futures import as_completed, ThreadPoolExecutor
 from functools import partial
 
 # Local package imports
-from physical_parameters_SciNet.model_instances.n2_setting_mast_constant_time import config
+# from physical_parameters_SciNet.model_instances.n2_setting_mast_constant_time import config
+from physical_parameters_SciNet.model_instances.n3_setting_mast_mag_prob import config
 
 
 

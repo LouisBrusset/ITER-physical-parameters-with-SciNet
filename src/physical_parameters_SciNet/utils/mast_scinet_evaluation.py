@@ -2,11 +2,12 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 
-from physical_parameters_SciNet.model_instances.n2_setting_mast_constant_time import config
+# from physical_parameters_SciNet.model_instances.n2_setting_mast_constant_time import config
+from physical_parameters_SciNet.model_instances.n3_setting_mast_mag_prob import config
+
 from physical_parameters_SciNet.utils.build_dataset import mast_dataset
 from torch.utils.data import DataLoader
 from physical_parameters_SciNet.model.scinet import PendulumNet
-
 
 
 def load_trained_model(model_path: str, device: torch.device = torch.device('cpu')) -> PendulumNet:
@@ -40,7 +41,7 @@ def full_inference(model: PendulumNet, data_loader: DataLoader, normalization_st
             all_logvars.append(logvar.cpu().numpy())
             all_observations.append(observations.cpu().numpy() * obs_factor)
             all_questions.append(questions.cpu().numpy() * que_factor)
-            all_answers.append(answers.cpu().numpy() * ans_factor)
+            all_answers.append(answers.cpu().numpy())
     all_reconstructions = np.concatenate(all_reconstructions, axis=0)
     all_means = np.concatenate(all_means, axis=0)
     all_logvars = np.concatenate(all_logvars, axis=0)
@@ -56,30 +57,38 @@ def full_inference(model: PendulumNet, data_loader: DataLoader, normalization_st
 
 
 
-def plot_reconstructions_answers_observations(observations: np.ndarray, reconstructions: np.ndarray, questions: np.ndarray, sample_idx: int):
+def plot_reconstructions_answers_observations(observations: np.ndarray, reconstructions: np.ndarray, questions: np.ndarray, answers: np.ndarray, sample_idx: int):
     time = np.linspace(config.MIN_TIME, config.MAX_TIME, config.M_INPUT_SIZE)
     plt.figure(figsize=(12, 6))
 
-    plt.subplot(2, 1, 1)
-    plt.plot(time, observations[sample_idx], label='Observations', color='blue')
-    plt.plot(time, reconstructions[sample_idx], label='Reconstruction', color='orange', linestyle='--')
+    plt.subplot(3, 1, 1)
+    plt.plot(time, observations[sample_idx], label='Observations', color='black', alpha=0.3)
+    plt.title(f'Observation signal (Sample Index: {sample_idx})')
+    plt.xlabel('Time Steps')
+    plt.ylabel('Angle (rad)')
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+
+    plt.subplot(3, 1, 2)
+    plt.plot(time, answers[sample_idx], label='Answers', color='blue', linestyle='--')
+    plt.plot(time, reconstructions[sample_idx], label='Reconstruction', color='orange')
     plt.title(f'Reconstruction vs Answer (Sample Index: {sample_idx})')
     plt.xlabel('Time Steps')
     plt.ylabel('Angle (rad)')
     plt.legend()
     plt.grid(True, alpha=0.3)
-    
-    plt.subplot(2, 1, 2)
+
+    plt.subplot(3, 1, 3)
     plt.plot(time, questions[sample_idx], label='Forcing Amplitude', color='green')
-    plt.plot(time, observations[sample_idx], label='Observations', color='black', alpha=0.3)
-    plt.title('Forcing Amplitude and Observations')
+    plt.plot(time, reconstructions[sample_idx], label='Reconstruction', color='orange')
+    plt.title(f'Reconstruction vs Forcing Amplitude (Sample Index: {sample_idx})')
     plt.xlabel('Time Steps')
     plt.ylabel('Amplitude')
     plt.legend()
     plt.grid(True, alpha=0.3)
     
     plt.tight_layout()
-    path = config.DIR_FIGURES_CHANNEL / f"reconstruction_vs_answer_sample.png"
+    path = config.DIR_FIGURES_CHANNEL / f"reconstruction_vs_answer_sample_{sample_idx}.png"
     plt.savefig(path)
     #plt.show()
     return None
@@ -137,14 +146,17 @@ if __name__ == "__main__":
     # Plot latent variables distributions
     plot_latent_variables(means, n_max_cols=5)
 
-    # Plot a random reconstruction
-    sample_idx = np.random.choice(config.TEST_SIZE)
-    plot_reconstructions_answers_observations(
-        observations=all_observations, 
-        reconstructions=reconstructions, 
-        questions=all_questions, 
-        sample_idx=sample_idx
-    )
+    # Plot n random reconstruction
+    n = 5
+    for _ in range(n):
+        sample_idx = np.random.choice(config.TEST_SIZE)
+        plot_reconstructions_answers_observations(
+            observations=all_observations, 
+            reconstructions=reconstructions, 
+            questions=all_questions,
+            answers=all_answers,
+            sample_idx=sample_idx
+        )
 
 
 
