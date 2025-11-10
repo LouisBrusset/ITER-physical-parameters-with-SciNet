@@ -29,10 +29,10 @@ class Config:
     # Synthetic forced damped pendulum
     N_SAMPLES = 20000
     MAXTIME = 100.0
-    TIMESTEPS = 200
+    TIMESTEPS = 600
 
-    BETA_RANGE = (0.5, 3.0)
-    KAPA_RANGE = (0.5, 20.0)
+    BETA_RANGE = (0.05, 0.5)
+    KAPA_RANGE = (1.0, 10.0)
     THETA0 = 1.0
     OMEGA0 = 0.0
     A_VALUE = None
@@ -46,10 +46,10 @@ class Config:
 
     ### SCINET architecture
     M_INPUT_SIZE = TIMESTEPS
-    M_ENC_HIDDEN_SIZES =  [500, 100, 100]
+    M_ENC_HIDDEN_SIZES =  [50, 10]
     M_LATENT_SIZE = 3
     M_QUESTION_SIZE = TIMESTEPS
-    M_DEC_HIDDEN_SIZES =  [200, 500, 300]
+    M_DEC_HIDDEN_SIZES =  [500, 1000, 500]
     M_OUTPUT_SIZE = TIMESTEPS
 
     ### Hyperparameters
