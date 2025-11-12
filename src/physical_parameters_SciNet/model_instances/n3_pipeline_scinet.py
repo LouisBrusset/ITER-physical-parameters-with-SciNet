@@ -18,15 +18,16 @@ from physical_parameters_SciNet.utils.mast_scinet_evaluation import load_trained
 
 
 if __name__ == "__main__":
-
+    device = config.DEVICE
+    print(f"\n----------- Using device: {device} -----------")
+    """
     build_dataset()
 
     # Clear GPU cache before starting training
     torch.cuda.empty_cache()
     gc.collect()
 
-    device = config.DEVICE
-    print(f"\n----------- Using device: {device} -----------")
+    
 
     # Load datasets
     path_train = config.DIR_PREPROCESSED_DATA / f"{config.MODEL_NAME}_train_dataset.pt"
@@ -95,7 +96,7 @@ if __name__ == "__main__":
 
 
     plot_history(history['train_loss'], history['valid_loss'])
-    
+    """
 
 
     # Load model
@@ -121,7 +122,8 @@ if __name__ == "__main__":
     sample_idx = np.random.choice(config.TEST_SIZE)
     plot_reconstructions_answers_observations(
         observations=all_observations, 
-        reconstructions=reconstructions, 
+        reconstructions=reconstructions,
+        answers=all_answers,
         questions=all_questions, 
         sample_idx=sample_idx
     )

@@ -35,7 +35,7 @@ def train_scinet(
     ans_factor = normalization_stats['ans_mean_max']
 
     print("------training on {}-------\n".format(device))
-    history = {'train_loss': [], 'valid_loss': []}
+    history = {'train_loss': [], 'valid_loss': [], 'kld_loss': [], 'recon_loss': []}
     print(f"{'Epoch':<20} ||| {'Train Loss':<15} ||| {'KLD Loss':<12} {'Recon Loss':<12} ||||||| {'Valid Loss':<15}")
     # Training
     for epoch in range(num_epochs):
@@ -62,6 +62,8 @@ def train_scinet(
         kld_loss /= len(train_loader.dataset)
         recon_loss /= len(train_loader.dataset)
         history['train_loss'].append(train_loss)
+        history['kld_loss'].append(kld_loss)
+        history['recon_loss'].append(recon_loss)
 
         # Evaluation
         model.eval()

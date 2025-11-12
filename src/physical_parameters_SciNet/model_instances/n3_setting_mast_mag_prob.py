@@ -37,10 +37,10 @@ class Config:
 
     ### SCINET architecture
     M_INPUT_SIZE = 200
-    M_ENC_HIDDEN_SIZES = [500, 100, 100]
+    M_ENC_HIDDEN_SIZES = [500, 200]
     M_LATENT_SIZE = 10
     M_QUESTION_SIZE = 200
-    M_DEC_HIDDEN_SIZES = [300, 500, 300]
+    M_DEC_HIDDEN_SIZES = [500, 500, 500]
     M_OUTPUT_SIZE = 200
 
     ### Hyperparameters

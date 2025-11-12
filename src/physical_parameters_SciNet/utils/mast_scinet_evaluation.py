@@ -62,33 +62,33 @@ def plot_reconstructions_answers_observations(observations: np.ndarray, reconstr
     plt.figure(figsize=(12, 6))
 
     plt.subplot(3, 1, 1)
-    plt.plot(time, observations[sample_idx], label='Observations', color='black', alpha=0.3)
-    plt.title(f'Observation signal (Sample Index: {sample_idx})')
-    plt.xlabel('Time Steps')
-    plt.ylabel('Angle (rad)')
-    plt.legend()
-    plt.grid(True, alpha=0.3)
-
-    plt.subplot(3, 1, 2)
-    plt.plot(time, answers[sample_idx], label='Answers', color='blue', linestyle='--')
-    plt.plot(time, reconstructions[sample_idx], label='Reconstruction', color='orange')
-    plt.title(f'Reconstruction vs Answer (Sample Index: {sample_idx})')
-    plt.xlabel('Time Steps')
-    plt.ylabel('Angle (rad)')
+    plt.plot(time, observations[sample_idx], label='b_field_probe_ccbv', color='black', alpha=0.3)
+    plt.title(f'Observations: magnetic probe (Sample Index: {sample_idx})')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Magnetic field intensity (T)')
     plt.legend()
     plt.grid(True, alpha=0.3)
 
     plt.subplot(3, 1, 3)
-    plt.plot(time, questions[sample_idx], label='Forcing Amplitude', color='green')
-    plt.plot(time, reconstructions[sample_idx], label='Reconstruction', color='orange')
-    plt.title(f'Reconstruction vs Forcing Amplitude (Sample Index: {sample_idx})')
-    plt.xlabel('Time Steps')
-    plt.ylabel('Amplitude')
+    plt.plot(time, answers[sample_idx], label='Plasma current', color='blue', linestyle='--')
+    #plt.plot(time, reconstructions[sample_idx], label='Reconstruction', color='orange')
+    plt.title(f'Reconstruction vs Answer: plasma current (Sample Index: {sample_idx})')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Current (A)')
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+
+    plt.subplot(3, 1, 2)
+    plt.plot(time, questions[sample_idx], label='Schedule', color='green')
+    #plt.plot(time, reconstructions[sample_idx], label='Reconstruction', color='orange')
+    plt.title(f'Forcing Amplitude: plasma schedule (Sample Index: {sample_idx})')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Current (A)')
     plt.legend()
     plt.grid(True, alpha=0.3)
     
     plt.tight_layout()
-    path = config.DIR_FIGURES_CHANNEL / f"reconstruction_vs_answer_sample_{sample_idx}.png"
+    path = config.DIR_FIGURES_CHANNEL / f"reconstruction_vs_answer_sample_{sample_idx}_without_recon.png"
     plt.savefig(path)
     #plt.show()
     return None
@@ -147,7 +147,7 @@ if __name__ == "__main__":
     plot_latent_variables(means, n_max_cols=5)
 
     # Plot n random reconstruction
-    n = 5
+    n = 6
     for _ in range(n):
         sample_idx = np.random.choice(config.TEST_SIZE)
         plot_reconstructions_answers_observations(
